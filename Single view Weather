@@ -1,0 +1,51 @@
+  func getWeatherDate(url: URL, completionHandler:(()->())?){
+        let session = URLSession(configuration: .ephemeral)
+        print("The url is \(url.absoluteString)")
+            let task = session.dataTask(with: url) {
+            (data, response, error) in
+            var localWeather = Array<weather>()
+                        print("Im in \(#file) at line \(#line) ")
+            if let actualError = error {
+                print("I got an error: \(actualError)")
+            } else if let actualResponse = response,
+                let actualData = data,
+                let parsedData = try? JSON(data: actualData) {
+                print("I got some data: \(actualData)")
+                print(parsedData)
+                //                let theWeather = parsedData["list"]
+                let theWeather = parsedData["main"]
+                //for (_, aWeather) in theWeather{
+                print("The weather is \(theWeather)")
+                   print("Im in \(#file) at line \(#line) ")
+                //    print("I got weather data: \(aWeather)")
+                     if let theTemp_min = theWeather["temp_min"].double,
+                        let theTemp = theWeather["temp"].double,
+                        let theTemp_Max = theWeather["temp_max"].double,
+                        let thePressure = theWeather["pressure"].double,
+                        let theHumidity = theWeather["humidity"].double
+                     {
+                       let zWeather = weather(temp: theTemp,pressure: thePressure,humidity: theHumidity,temp_min: theTemp_min,  temp_max: theTemp_Max)
+                        localWeather.append(zWeather)
+                   }
+//                //}
+                print("Im in \(#file) at line \(#line) ")
+                self.currentWeather = localWeather
+                print("Im in \(#file) at line \(#line) ")
+                }
+                print("Done with closuer \(localWeather.count) rows")
+                DispatchQueue.main.async { completionHandler?()}
+                print("Im in \(#file) at line \(#line) ")
+               
+        } // end of CH
+            
+            print("Im in \(#file) at line \(#line) ")
+        task.resume()
+            print("Im in \(#file) at line \(#line) ")
+    }
+    
+    
+    func getRecent(completionHandler: (()->())? = nil) {
+        // 1. generate a URL to get the data
+        let theURL = generaterURL(city: "Farmingdale")
+        getWeatherDate(url: theURL, completionHandler: completionHandler)
+    }
